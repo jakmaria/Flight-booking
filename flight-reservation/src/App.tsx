@@ -1,18 +1,23 @@
 import React from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import FlightSearch from './components/FlightSearch';
 import FlightList from './components/FlightList';
-import FlightDetails from './components/FlightDetails';
 import Confirmation from './components/Confirmation';
+import PassengerInfo from './components/PassengerInfo';
+import SeatSelection from './components/SeatSelection';
+
+const theme = createTheme();
 
 const App: React.FC = () => {
   return (
-    <div>
+    <ThemeProvider theme={theme}>
       <FlightSearch />
       <FlightList />
-      <FlightDetails />
+      <PassengerInfo />
+      <SeatSelection/>
       <Confirmation />
-    </div>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;

@@ -3,11 +3,15 @@ import { useFlightContext } from '../contexts/FlightContext';
 import { Flight } from '../types/Flight';
 
 const FlightList: React.FC = () => {
-  const { state, makeReservation, showAllFlights } = useFlightContext();
+  const { state, setReservation, showAllFlights } = useFlightContext();
 
   const handleReservation = (flight: Flight) => {
-    makeReservation(flight);
+    setReservation(flight);
   };
+
+  if (state.bookingStep !== 'SEARCH') {
+    return null;
+  }
 
   return (
     <div>

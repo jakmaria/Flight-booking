@@ -1,11 +1,20 @@
 import React from 'react';
 import { useFlightContext } from '../contexts/FlightContext';
 import { Seat } from '../types/Flight';
+import Button from '@mui/material/Button';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  selected: {
+    backgroundColor: 'green',
+  },
+});
 
 const SeatSelection: React.FC = () => {
   const { state, selectSeat, deselectSeat } = useFlightContext();
 
   const flight = state.reservation;
+  const classes = useStyles();
 
   if (!flight) {
     return <div>No flight selected</div>;
@@ -18,21 +27,26 @@ const SeatSelection: React.FC = () => {
       selectSeat(seat);
     }
   };
+
+  if (state.bookingStep !== 'SEAT_SELECTION') {
+    return null;
+  }
   return (
     <div>
       <h2>Select a Seat</h2>
       {flight.seats.map((seat: Seat) => (
-        <button
+        <Button
           key={seat.id}
           onClick={() => {
             handleSeatClick(seat);
           }}
           disabled={!seat.available}
           title={seat.available ? '' : 'This seat is unavailable'}
-          className={state.selectedSeats.find((s) => s.id === seat.id) ? 'selected' : ''}
+          variant="contained"
+          className={state.selectedSeats.find((s) => s.id === seat.id) ? classes.selected : ''}
         >
           {seat.number}
-        </button>
+        </Button>
       ))}
     </div>
   );
