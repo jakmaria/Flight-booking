@@ -2,22 +2,11 @@ import React from 'react';
 import { useFlightContext } from '../contexts/FlightContext';
 import { Seat } from '../types/Flight';
 import Button from '@mui/material/Button';
-import { makeStyles } from '@mui/styles';
-
-const useStyles = makeStyles({
-  selected: {
-    backgroundColor: 'green',
-    '&:hover': {
-      backgroundColor: 'darkgreen',
-    },
-  },
-});
 
 const SeatSelection: React.FC = () => {
   const { state, selectSeat, deselectSeat, confirmReservation } = useFlightContext();
 
   const flight = state.reservation;
-  const classes = useStyles();
 
   if (!flight) {
     return <div>No flight selected</div>;
