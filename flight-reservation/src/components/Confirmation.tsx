@@ -23,8 +23,14 @@ const Confirmation: React.FC = () => {
       <p>Departure: {new Date(reservation.departure).toLocaleString()}</p>
       <p>Seats Selected: {selectedSeats.map((seat) => seat.id).join(', ')}</p>
       <h3>Passenger Information</h3>
-      <p>Name: {passengerInfo.fullName}</p>
-      <p>Date of Birth: {passengerInfo.birthDate}</p>
+      {passengerInfo.passengers.map((passenger) => {
+        return (
+          <div>
+            <p>Name: {passenger.fullName}</p>
+            <p>Date of Birth: {passenger.birthDate}</p>
+          </div>
+        );
+      })}
     </div>
   );
 };
