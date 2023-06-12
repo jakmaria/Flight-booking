@@ -11,6 +11,7 @@ interface State {
   passengerInfo: FormData | null;
   confirmation: string | null;
   bookingStep: 'SEARCH' | 'PASSENGER_INFO' | 'SEAT_SELECTION' | 'CONFIRMATION';
+  error: string | null;
 }
 
 // Actions
@@ -23,7 +24,8 @@ type Action =
   | { type: 'SELECT_SEAT'; payload: Seat }
   | { type: 'DESELECT_SEAT'; payload: Seat }
   | { type: 'SET_PASSENGER_INFO'; payload: FormData }
-  | { type: 'CONFIRM_RESERVATION'; payload: string };
+  | { type: 'CONFIRM_RESERVATION'; payload: string }
+  | { type: 'SET_ERROR'; payload: string };
 
 type ContextProps = [State, React.Dispatch<Action>];
 
@@ -70,6 +72,9 @@ const flightReducer = (state: State, action: Action): State => {
     case 'CONFIRM_RESERVATION':
       return { ...state, confirmation: action.payload, bookingStep: 'CONFIRMATION' };
 
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+
     default:
       return state;
   }
@@ -84,13 +89,32 @@ const FlightProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
     passengerInfo: null,
     confirmation: null,
     bookingStep: 'SEARCH',
+    error: null,
   };
 
   const [state, dispatch] = useReducer(flightReducer, initialState);
 
+  const fetchFlights = () => {
+    return new Promise<Flight[]>((resolve, reject) => {
+      setTimeout(() => {
+        // Simulating a 10% chance that fetching flights fails
+        if (Math.random() < 0.1) {
+          reject(new Error('Failed to fetch flights'));
+        } else {
+          resolve(mockFlights);
+        }
+      }, 2000);
+    });
+  };
+
   useEffect(() => {
-    // This will load flights into state when the component is mounted
-    dispatch({ type: 'LOAD_FLIGHTS', payload: mockFlights });
+    fetchFlights()
+      .then((flights) => {
+        dispatch({ type: 'LOAD_FLIGHTS', payload: flights });
+      })
+      .catch((error) => {
+        dispatch({ type: 'SET_ERROR', payload: error.message });
+      });
   }, []);
 
   return <FlightContext.Provider value={[state, dispatch]}>{children}</FlightContext.Provider>;
