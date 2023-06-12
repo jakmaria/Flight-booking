@@ -23,8 +23,8 @@ const FlightDetails: React.FC<FlightDetailsProps> = ({ flight }) => {
       <div>
         {flight.from} to {flight.to}
       </div>
-      <div>Departure: {new Date(flight.departure).toLocaleString()}</div>
-      <div>Arrival: {new Date(flight.arrival).toLocaleString()}</div>
+      <div>Departure: {new Date(flight.departure.toString()).toLocaleString()}</div>
+      <div>Arrival: {new Date(flight.arrival.toString()).toLocaleString()}</div>
       <div>Duration: {flight.duration}</div>
       <div>Price: {flight.price} </div>
       {availableSeats && <div>Number of available seats: {availableSeats}</div>}
