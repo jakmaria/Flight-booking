@@ -7,6 +7,9 @@ import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles({
   selected: {
     backgroundColor: 'green',
+    '&:hover': {
+      backgroundColor: 'darkgreen',
+    },
   },
 });
 
@@ -32,6 +35,9 @@ const SeatSelection: React.FC = () => {
     confirmReservation();
   };
 
+  const numberOfPassengers = state.passengerInfo?.passengers.length;
+  const isSelectionCorrect = state.selectedSeats.length === numberOfPassengers;
+
   if (state.bookingStep !== 'SEAT_SELECTION') {
     return null;
   }
@@ -47,7 +53,11 @@ const SeatSelection: React.FC = () => {
           disabled={!seat.available}
           title={seat.available ? '' : 'This seat is unavailable'}
           variant="contained"
-          className={state.selectedSeats.find((s) => s.id === seat.id) ? classes.selected : ''}
+          sx={
+            state.selectedSeats.find((s) => s.id === seat.id)
+              ? { backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }
+              : {}
+          }
         >
           {seat.number}
         </Button>
@@ -56,6 +66,7 @@ const SeatSelection: React.FC = () => {
         onClick={() => {
           handleConfirmation();
         }}
+        disabled={!isSelectionCorrect}
       >
         Confirm reservation
       </Button>

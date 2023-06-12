@@ -16,6 +16,7 @@ const FlightDetails: React.FC<FlightDetailsProps> = ({ flight }) => {
   if (state.bookingStep !== 'SEARCH') {
     return null;
   }
+  const availableSeats = flight.seats.filter((seat) => seat.available).length;
 
   return (
     <div>
@@ -25,7 +26,8 @@ const FlightDetails: React.FC<FlightDetailsProps> = ({ flight }) => {
       <div>Departure: {new Date(flight.departure).toLocaleString()}</div>
       <div>Arrival: {new Date(flight.arrival).toLocaleString()}</div>
       <div>Duration: {flight.duration}</div>
-      <div>Price: {flight.price}</div>
+      <div>Price: {flight.price} </div>
+      {availableSeats && <div>Number of available seats: {availableSeats}</div>}
       <button onClick={() => handleReservation(flight)}>Select</button>
     </div>
   );

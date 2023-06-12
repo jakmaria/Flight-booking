@@ -55,6 +55,8 @@ const PassengerInfo: React.FC = () => {
     setPassengerCount(parseInt(data.numPassengers));
   };
 
+  const maxSeats = state.reservation?.seats.filter((seat) => seat.available).length;
+
   if (state.bookingStep !== 'PASSENGER_INFO') {
     return null;
   }
@@ -63,7 +65,13 @@ const PassengerInfo: React.FC = () => {
     <div>
       <form onSubmit={handleSubmitPassengerCount(handleNumber)}>
         <h1>How many of you will be travelling?</h1>
-        <input {...registerPassengerCount('numPassengers')} type="number" min="1" required />
+        <input
+          {...registerPassengerCount('numPassengers')}
+          type="number"
+          min="1"
+          max={maxSeats}
+          required
+        />
         <Button type="submit" variant="contained" color="primary">
           Set number of passengers
         </Button>
