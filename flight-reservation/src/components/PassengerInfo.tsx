@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import { Box, Grid, TextField, Button } from '@mui/material';
 import { useFlightContext } from '../contexts/FlightContext';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { passengerCountSchema, schema } from '../validation/PassengerInfoValidation';
@@ -21,7 +20,7 @@ export type PassengerCountFormData = {
 const PassengerInfo: React.FC = () => {
   const [passengerCount, setPassengerCount] = useState(0);
   const { state, setPassengerInfo } = useFlightContext();
-
+  const [isPassengerCountSet, setIsPassengerCountSet] = useState(false);
   const maxSeats = (state.reservation?.seats.filter((seat) => seat.available) || []).length;
 
   const {
@@ -41,6 +40,7 @@ const PassengerInfo: React.FC = () => {
     control,
     name: 'passengers',
   });
+
   useEffect(() => {
     const numberOfPassengerForms = fields.length;
 
@@ -56,35 +56,59 @@ const PassengerInfo: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passengerCount]);
 
-  const onSubmit = (data: FormData) => {
-    setPassengerInfo(data);
-  };
-
-  const handleNumberOfPassengers = (data: { numPassengers: string }) => {
+  const handleNumberOfPassengers = useCallback((data: { numPassengers: string }) => {
     setPassengerCount(parseInt(data.numPassengers));
-  };
+    setIsPassengerCountSet(true);
+  }, []);
+
+  const onSubmit = useCallback(
+    (data: FormData) => {
+      setPassengerInfo(data);
+    },
+    [setPassengerInfo]
+  );
 
   if (state.bookingStep !== 'PASSENGER_INFO') {
     return null;
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmitPassengerCount(handleNumberOfPassengers)}>
-        <h1>How many of you will be travelling?</h1>
-        <input
-          {...registerPassengerCount('numPassengers')}
-          type="number"
-          min="1"
-          max={maxSeats}
-          required
-        />
-        {passengerCountErrors.numPassengers && <p>{passengerCountErrors.numPassengers.message}</p>}
-
-        <Button type="submit" variant="contained" color="primary">
-          Set number of passengers
-        </Button>
-      </form>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      minHeight="20vh"
+      padding={2}
+    >
+      {!isPassengerCountSet && (
+        <form onSubmit={handleSubmitPassengerCount(handleNumberOfPassengers)}>
+          <h1>How many of you will be travelling?</h1>
+          <TextField
+            {...registerPassengerCount('numPassengers')}
+            type="number"
+            InputProps={{
+              inputProps: {
+                min: 1,
+                max: maxSeats,
+              },
+            }}
+            required
+            variant="outlined"
+            error={Boolean(passengerCountErrors.numPassengers)}
+            helperText={passengerCountErrors.numPassengers?.message || ''}
+            sx={{ height: '50px', minWidth: '5rem' }}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ ml: '1rem', height: '50px' }}
+          >
+            That's it!
+          </Button>
+        </form>
+      )}
 
       <form onSubmit={handleSubmitPassengerData(onSubmit)}>
         {fields.map((field, index) => {
@@ -94,44 +118,52 @@ const PassengerInfo: React.FC = () => {
           const passportIdErrorMessage = passengerError?.passportId?.message || '';
 
           return (
-            <div key={field.id}>
-              <TextField
-                {...registerPassengerData(`passengers.${index}.fullName`)}
-                label="Full Name"
-                variant="outlined"
-                required
-                error={Boolean(fullNameErrorMessage)}
-                helperText={fullNameErrorMessage}
-              />
-              <TextField
-                {...registerPassengerData(`passengers.${index}.birthDate`)}
-                label="Date of Birth"
-                type="date"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                required
-                error={Boolean(birthDateErrorMessage)}
-                helperText={birthDateErrorMessage}
-              />
-
-              <TextField
-                {...registerPassengerData(`passengers.${index}.passportId`)}
-                label="Passport ID"
-                variant="outlined"
-                required
-                error={Boolean(passportIdErrorMessage)}
-                helperText={passportIdErrorMessage}
-              />
-            </div>
+            <Grid container direction="column" spacing={2} justifyContent="center" key={field.id}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  {...registerPassengerData(`passengers.${index}.fullName`)}
+                  label="Full Name"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  error={Boolean(fullNameErrorMessage)}
+                  helperText={fullNameErrorMessage}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  {...registerPassengerData(`passengers.${index}.birthDate`)}
+                  label="Date of Birth"
+                  type="date"
+                  variant="outlined"
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  required
+                  error={Boolean(birthDateErrorMessage)}
+                  helperText={birthDateErrorMessage}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  {...registerPassengerData(`passengers.${index}.passportId`)}
+                  label="Passport ID"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  error={Boolean(passportIdErrorMessage)}
+                  helperText={passportIdErrorMessage}
+                />
+              </Grid>
+              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+                Confirm passenger info
+              </Button>
+            </Grid>
           );
         })}
-        <Button type="submit" variant="contained" color="primary">
-          Confirm passenger info
-        </Button>
       </form>
-    </div>
+    </Box>
   );
 };
 

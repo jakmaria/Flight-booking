@@ -1,21 +1,33 @@
 import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import FlightSearch from './components/FlightSearch';
 import FlightList from './components/FlightList';
 import Confirmation from './components/Confirmation';
 import PassengerInfo from './components/PassengerInfo';
 import SeatSelection from './components/SeatSelection';
-
-const theme = createTheme();
+import { theme, useStyles } from './styles/theme';
+import { CssBaseline, Box, Grid } from '@mui/material';
 
 const App: React.FC = () => {
+  const classes = useStyles();
   return (
     <ThemeProvider theme={theme}>
-      <FlightSearch />
-      <FlightList />
-      <PassengerInfo />
-      <SeatSelection/>
-      <Confirmation />
+      <CssBaseline />
+      <Box className={classes.root}>
+        <Grid
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          style={{ paddingTop: '15rem' }}
+        >
+          <FlightSearch />
+          <FlightList />
+          <PassengerInfo />
+          <SeatSelection />
+          <Confirmation />
+        </Grid>
+      </Box>
     </ThemeProvider>
   );
 };

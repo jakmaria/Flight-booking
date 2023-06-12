@@ -21,6 +21,7 @@ type Action =
   | { type: 'SET_RESERVATION'; payload: Flight }
   | { type: 'CLEAR_RESERVATION' }
   | { type: 'SHOW_ALL_FLIGHTS' }
+  | { type: 'HIDE_ALL_FLIGHTS' }
   | { type: 'SELECT_SEAT'; payload: Seat }
   | { type: 'DESELECT_SEAT'; payload: Seat }
   | { type: 'SET_PASSENGER_INFO'; payload: FormData }
@@ -39,18 +40,32 @@ const flightReducer = (state: State, action: Action): State => {
     case 'SHOW_ALL_FLIGHTS':
       return {
         ...state,
+        filteredFlights: [],
+      };
+    case 'HIDE_ALL_FLIGHTS':
+      return {
+        ...state,
         filteredFlights: state.flights,
       };
     case 'FILTER_FLIGHTS':
       const { from, to, departureDate } = action.payload;
-      return {
-        ...state,
-        filteredFlights: state.flights.filter(
+      let filteredFlights;
+      if (departureDate) {
+        filteredFlights = state.flights.filter(
           (flight) =>
             flight.from === from &&
             flight.to === to &&
             new Date(flight.departure).toDateString() === new Date(departureDate).toDateString()
-        ),
+        );
+      } else {
+        filteredFlights = state.flights.filter(
+          (flight) => flight.from === from && flight.to === to
+        );
+      }
+
+      return {
+        ...state,
+        filteredFlights: filteredFlights,
       };
     case 'SET_RESERVATION':
       return { ...state, reservation: action.payload, bookingStep: 'PASSENGER_INFO' };
@@ -140,6 +155,10 @@ export const useFlightContext = () => {
     dispatch({ type: 'SHOW_ALL_FLIGHTS' });
   };
 
+  const hideAllFlights = () => {
+    dispatch({ type: 'HIDE_ALL_FLIGHTS' });
+  };
+
   const selectSeat = (seat: Seat) => {
     dispatch({ type: 'SELECT_SEAT', payload: seat });
   };
@@ -165,6 +184,7 @@ export const useFlightContext = () => {
     filterFlights,
     setReservation,
     showAllFlights,
+    hideAllFlights,
     selectSeat,
     deselectSeat,
     setPassengerInfo,

@@ -2,15 +2,12 @@ import React from 'react';
 import { useFlightContext } from '../contexts/FlightContext';
 import { Seat } from '../types/Flight';
 import Button from '@mui/material/Button';
+import { Box } from '@mui/system';
 
 const SeatSelection: React.FC = () => {
   const { state, selectSeat, deselectSeat, confirmReservation } = useFlightContext();
 
   const flight = state.reservation;
-
-  if (!flight) {
-    return <div>No flight selected</div>;
-  }
 
   const handleSeatClick = (seat: Seat) => {
     if (state.selectedSeats.find((s) => s.id === seat.id)) {
@@ -32,33 +29,43 @@ const SeatSelection: React.FC = () => {
   }
   return (
     <div>
-      <h2>Select a Seat</h2>
-      {flight.seats.map((seat: Seat) => (
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+        <h2>Select a Seat</h2>
+        {flight &&
+          flight.seats.map((seat: Seat) => (
+            <Button
+              key={seat.id}
+              onClick={() => {
+                handleSeatClick(seat);
+              }}
+              disabled={!seat.available}
+              title={seat.available ? '' : 'This seat is unavailable'}
+              variant="contained"
+              sx={
+                state.selectedSeats.find((s) => s.id === seat.id)
+                  ? {
+                      backgroundColor: 'green',
+                      '&:hover': { backgroundColor: 'darkgreen' },
+                      m: '1rem',
+                    }
+                  : { m: '1rem' }
+              }
+            >
+              {seat.number}
+            </Button>
+          ))}
         <Button
-          key={seat.id}
           onClick={() => {
-            handleSeatClick(seat);
+            handleConfirmation();
           }}
-          disabled={!seat.available}
-          title={seat.available ? '' : 'This seat is unavailable'}
+          disabled={!isSelectionCorrect}
           variant="contained"
-          sx={
-            state.selectedSeats.find((s) => s.id === seat.id)
-              ? { backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }
-              : {}
-          }
+          color="primary"
+          sx={{ mt: '2rem' }}
         >
-          {seat.number}
+          Confirm reservation
         </Button>
-      ))}
-      <Button
-        onClick={() => {
-          handleConfirmation();
-        }}
-        disabled={!isSelectionCorrect}
-      >
-        Confirm reservation
-      </Button>
+      </Box>
     </div>
   );
 };
