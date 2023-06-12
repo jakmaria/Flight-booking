@@ -11,7 +11,7 @@ const useStyles = makeStyles({
 });
 
 const SeatSelection: React.FC = () => {
-  const { state, selectSeat, deselectSeat } = useFlightContext();
+  const { state, selectSeat, deselectSeat, confirmReservation } = useFlightContext();
 
   const flight = state.reservation;
   const classes = useStyles();
@@ -26,6 +26,10 @@ const SeatSelection: React.FC = () => {
     } else {
       selectSeat(seat);
     }
+  };
+
+  const handleConfirmation = () => {
+    confirmReservation();
   };
 
   if (state.bookingStep !== 'SEAT_SELECTION') {
@@ -48,6 +52,13 @@ const SeatSelection: React.FC = () => {
           {seat.number}
         </Button>
       ))}
+      <Button
+        onClick={() => {
+          handleConfirmation();
+        }}
+      >
+        Confirm reservation
+      </Button>
     </div>
   );
 };

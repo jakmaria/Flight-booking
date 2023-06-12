@@ -30,7 +30,7 @@ type ContextProps = [State, React.Dispatch<Action>];
 const FlightContext = React.createContext<ContextProps | undefined>(undefined);
 
 // Reducer function
-const flightReducer = (state: State, action: Action):State => {
+const flightReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'LOAD_FLIGHTS':
       return { ...state, flights: action.payload };
@@ -110,7 +110,6 @@ export const useFlightContext = () => {
 
   const setReservation = (flight: Flight) => {
     dispatch({ type: 'SET_RESERVATION', payload: flight });
-    console.log('setReservation is being triggered');
   };
 
   const showAllFlights = () => {
@@ -134,7 +133,6 @@ export const useFlightContext = () => {
     new Promise<string>((resolve) => setTimeout(() => resolve('CONFIRMATION123'), 2000)).then(
       (confirmation) => dispatch({ type: 'CONFIRM_RESERVATION', payload: confirmation })
     );
-    console.log('confirmReservation is being triggered');
   };
 
   return {

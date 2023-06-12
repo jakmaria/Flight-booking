@@ -4,9 +4,6 @@ import { useFlightContext } from '../contexts/FlightContext';
 const Confirmation: React.FC = () => {
   const { state } = useFlightContext();
   const { reservation, selectedSeats, passengerInfo, confirmation } = state;
-  console.log('this is Confirmation component and this is reservation', reservation);
-  console.log('this is Confirmation component and this is passengerInfo', passengerInfo);
-  console.log('this is Confirmation component and this is confirmation', confirmation);
 
   if (state.bookingStep !== 'CONFIRMATION') {
     return null;
