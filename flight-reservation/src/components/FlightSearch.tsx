@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFlightContext } from '../contexts/FlightContext';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { schema } from '../validation/FlightSearchValidation';
 
 type Inputs = {
   from: string;
@@ -9,30 +11,35 @@ type Inputs = {
 };
 
 const FlightSearch: React.FC = () => {
-  const { filterFlights } = useFlightContext();
+  const { state, filterFlights } = useFlightContext();
+  const [searched, setSearched] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({ resolver: yupResolver(schema) });
 
   const onSubmit = (data: Inputs) => {
     filterFlights(data);
-    // Here you will dispatch the action to filter flights based on search criteria.
+    setSearched(true);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input {...register('from', { required: true })} placeholder="From" />
-      {errors.from && <p>This field is required</p>}
+      {errors.from && <p>{errors.from.message}</p>}
 
       <input {...register('to', { required: true })} placeholder="To" />
-      {errors.to && <p>This field is required</p>}
+      {errors.to && <p>{errors.to.message}</p>}
 
       <input {...register('departureDate', { required: true })} type="date" />
-      {errors.departureDate && <p>This field is required</p>}
+      {errors.departureDate && <p>{errors.departureDate.message}</p>}
 
       <input type="submit" />
+      {searched && state.filteredFlights.length === 0 && (
+        <p>No flights available with your specified criteria.</p>
+      )}
     </form>
   );
 };
